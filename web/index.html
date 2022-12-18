@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Terrain generator</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="views">
+      <div class="radio">
+        <a href="#table_view">Table</a>
+        <a href="#image_view">Image</a>
+      </div>
+      <div id="table_view" class="view">
+        <table id="output_table"></table>
+      </div>
+      <div id="image_view" class="view">
+        <img id="output_image" />
+      </div>
+    </div>
+    <div id="panel">
+      <input type="file" id="fileInput" />
+      <form>
+        <div>
+          <label for="sizeX">sizeX</label>
+          <input type="number" name="sizeX" id="sizeX" min="0" value="32" required />
+        </div>
+        <div>
+          <label for="sizeY">sizeY</label>
+          <input type="number" name="sizeY" id="sizeY" min="0" value="32" required />
+        </div>
+        <div>
+          <label for="minZ">minZ</label>
+          <input type="number" name="minZ" id="minZ" value="0" required />
+        </div>
+        <div>
+          <label for="maxZ">maxZ</label>
+          <input type="number" name="maxZ" id="maxZ" value="256" required />
+        </div>
+        <div>
+          <label for="roughness">roughness</label>
+          <input type="number" name="roughness" id="roughness" min="0" value="5" required />
+        </div>
+        <div>
+          <label for="seed">seed</label>
+          <input type="number" name="seed" id="seed" />
+        </div>
+        <input type="submit" value="Generate!" />
+      </form>
+      <input type="button" id="exportFile" value="Export..." />
+    </div>
+    <script type="module">
+      import init, { Map } from './terrain.js';
+      let map;
+      
+      init();
+      panel.addEventListener('submit', e => {
+        e.preventDefault();
+        map = new Map(
+          Number(sizeX.value),
+          Number(sizeY.value),
+          Number(minZ.value),
+          Number(maxZ.value),
+          Number(roughness.value)
+        );
+        let seedN = null;
+        if(seed.value !== "") {
+          seedN = BigInt(seed.value);
+        }
+        map.generate_seeded(seedN);
+        if(location.hash == '#image_view') {
+          output_image.src = map.to_data_uri();
+        } else {
+          map.to_html_table(output_table);
+        }
+      });
+      
+      fileInput.addEventListener('input', e => {
+        e.target.files[0].text().then(v => {
+          let l = v.split(/\r?\n/);
+          sizeX.value = l[0];
+          sizeY.value = l[1];
+          minZ.value = l[2];
+          maxZ.value = l[3];
+          roughness.value = l[4];
+        });
+      })
+      exportFile.addEventListener('click', e => {
+        e.preventDefault();
+        let img = location.hash === '#image_view';
+
+        let url;
+        let a = document.createElement('a');
+        if(img) {
+          url = map.to_data_uri();
+          a.download = 'export.png';
+        } else {
+          let data = map.to_table();
+          let file = new Blob(data, { type: 'text/plain' });
+          url = URL.createObjectURL(file);
+          a.download = 'export.txt';
+        }
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        if(!img) {
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        }
+      });
+    </script>
+  </body>
+</html>
