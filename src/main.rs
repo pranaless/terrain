@@ -62,7 +62,7 @@ impl Map {
     }
 
     pub fn to_table(&self) -> String {
-        let width = self.height.1.log10() as usize;
+        let width = self.height.1.log10() as usize + 3;
         let mut data = String::new();
         self.iter().for_each(|((x, y), h)| {
             if x == 0 && y != 0 {
@@ -71,7 +71,7 @@ impl Map {
                 data.push_str("\r\n");
             }
             let h = h.clamp(0.0, 1.0) * (self.height.1 - self.height.0) + self.height.0;
-            data.push_str(&format!("{:width$.1}", h, width = width));
+            data.push_str(&format!("{:width$.1} ", h, width = width));
         });
         data
     }

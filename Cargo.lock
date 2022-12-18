@@ -359,6 +359,7 @@ dependencies = [
  "console_log",
  "getrandom",
  "image",
+ "log",
  "rand",
  "wasm-bindgen",
  "web-sys",

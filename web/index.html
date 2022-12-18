@@ -96,7 +96,7 @@
           a.download = 'export.png';
         } else {
           let data = map.to_table();
-          let file = new Blob(data, { type: 'text/plain' });
+          let file = new Blob([data], { type: 'text/plain' });
           url = URL.createObjectURL(file);
           a.download = 'export.txt';
         }
