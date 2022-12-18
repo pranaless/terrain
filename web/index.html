@@ -110,6 +110,15 @@
           }, 0);
         }
       });
+      window.addEventListener('hashchange', e => {
+        if(map !== null) {
+          if(location.hash === '#image_view') {
+            output_image.src = map.to_data_uri();
+          } else {
+            map.to_html_table(output_table);
+          }
+        }
+      });
       if(location.hash === '') {
         location.hash = '#table_view';
       }

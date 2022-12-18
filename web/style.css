@@ -26,6 +26,10 @@ body {
   display: initial;
 }
 
+#table_view table {
+  padding: 5px;
+}
+
 #table_view td {
   text-align: right;
 }
